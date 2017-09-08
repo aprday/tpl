@@ -1,0 +1,1 @@
+module.exports.tpl = require('./src/index.js');
