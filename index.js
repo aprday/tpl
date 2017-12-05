@@ -1,1 +1,1 @@
-module.exports.tpl = require('./src/index.js');
+module.exports = require('./src/compile.js');

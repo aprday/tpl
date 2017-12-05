@@ -1,8 +1,9 @@
-const tpl = require('../src/index.js');
+const {inline} = require('../src/inline.js');
+const {compile, render} = require('../src/compile.js');
 
-const str = tpl.inline('./test/index.tpl', 'utf8');
-const compiled = tpl.compile(str);
-console.log(tpl.render(compiled, {
+const str = inline('./test/index.tpl', 'utf8');
+const compiled = compile(str);
+console.log(render(compiled, {
     user: {
         name: 'Jackson Tian'
     },
