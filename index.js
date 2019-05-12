@@ -1,1 +1,1 @@
-module.exports = require('./src/compile.js');
+module.exports = require('./lib/index.js');

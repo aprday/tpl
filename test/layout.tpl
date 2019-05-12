@@ -1,1 +1,1 @@
-I am farther <%- body %>
+I am farther <%- body %> <%- text %>

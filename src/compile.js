@@ -5,15 +5,15 @@ const render = function (compiled, data) {
 const compile = function (str) {
     let tpl = str.replace(/\n/g, '\\n')
     .replace(/<%=([/\s\S]+?)%>/g, function (match, code) {
-        // 转义
+        // 转义 如果有输出则执行
         return `' + escape(${code}) + '`;
     })
-    .replace(/<%-([/\s\S]+?)%>/g, function (match, code) {
-        // 转义
+    .replace(/<%=([/\s\S]+?)%>/g, function (match, code) {
+        // 转义 如果还有输出则直接输出
         return `' + ${code} + '`;
     })
     .replace(/<%([/\s\S]+?)%>/g, function (match, code) {
-        // 转义
+        // 转义 代码
         return `';\n${code}\ntpl += '`;
     })
     .replace(/\'\n/g, '\'')

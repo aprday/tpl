@@ -1,36 +1,57 @@
-const path = require('path');
-const fs = require('fs');
-let DIR = './'
+const {readFileSync} = require('fs');
+const {parse, join} = require('path');
 
-const inline = function (root) {
-    DIR = path.parse(root).dir;
-    let str = fs.readFileSync(root, 'utf8');
-    str = parser(str, DIR)
-    return str;
+let files = {};
+let blocks = {};
+let extend = '';
+let dir = './';
+
+function load(path) {
+    return readFileSync(join(dir, path), 'utf8');
 }
 
-const parser = function (str, dir) {
-    let file = '';
-    const replaced = str.replace(/<%\s+(include[^<%]+)\s+%>/g, function (match, code) {
+const inline = function (path) {
+    dir = parse(path).dir;
+    const str = readFileSync(path, 'utf8');
+    return parser(str);
+}
+
+const parser = function (str) {
+    const replaced = str.replace(/<%\s+(include.*)\s+%>/g, function (match, code) {
+        // 转义include
         const partial = code.split(/\s/)[1];
-        return fs.readFileSync(path.join(dir, partial), 'utf8');
-    }).replace(/<%\s+(extends[^<%]+)\s+%>/g, function (match, code) {
+        if (!files[partial]) {
+            files[partial] = load(partial);
+        }
+        return files[partial];
+    }).replace(/<%\s+(extend.*)\s+%>/g, function (match, code) {
+        // 转义 extend
         const partial = code.split(/\s/)[1];
-        file = fs.readFileSync(path.join(dir, partial), 'utf8');
+        extend = load(partial);
+        return '';
+    }).replace(/<%#([/\s\S]+?)%>([/\s\S]+?)<%\/([/\s\S]+?)%>/g, function (match, code, content) {
+        blocks[code.split(/\s/)[1]] = content;
         return '';
     });
-    const layout = file.replace(/<%-\s*body\s*%>/g, function (match, code) {
-        return replaced
+    // 转义配置的block
+    const layout = extend.replace(/<%-([/\s\S]+?)%>/g, function (match, code) {
+        const key = code.split(/\s/)[1];
+        const value = blocks[key];
+        if (value) {
+            return value;
+        }
+        return '';
     });
 
     // 如果有嵌套，则进行循环
-    if (layout.match(/<%\s+(include[^<%]+)\s+%>/) || layout.match(/<%\s+(extends[^<%]+)\s+%>/)) {
-        return include(layout);
+    if (layout.match(/<%\s+(include.*)\s+%>/) || layout.match(/<%\s+(extends.*)\s+%>/)) {
+        return parser(layout);
     } else {
         return layout;
     }
 };
 
 module.exports = {
-    inline
+    inline,
+    load
 };

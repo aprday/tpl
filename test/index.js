@@ -1,7 +1,10 @@
-const {inline} = require('../src/inline.js');
-const {compile, render} = require('../src/compile.js');
+const {load, inline, compile, render} = require('../src/index.js');
 
-const str = inline('./test/index.tpl', 'utf8');
+// const text = load('../src/index.js');
+// console.log(text);
+
+const str = inline('./index.tpl', 'utf8');
+// console.log(str);
 const compiled = compile(str);
 console.log(render(compiled, {
     user: {

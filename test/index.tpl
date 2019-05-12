@@ -1,5 +1,10 @@
-<% extends layout.tpl %>
-I am main page
+<% extend layout.tpl %>
+<%# body %>
+<span>I am main page</span>
+<%/ body %>
+<%# text %>
+a   text
+<%/ text %>
 <% include user.tpl %>
 <% if (user) { %>
     <h2>
